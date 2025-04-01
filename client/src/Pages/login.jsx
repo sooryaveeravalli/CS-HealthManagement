@@ -125,7 +125,7 @@ const login = () => {
         </div>
         <div className="w-1/2 h-screen bg-[#76dbcf] flex flex-col place-content-center items-center rounded-l-full">
           <h2 className="text-4xl flex w-full justify-center font-bold">
-            Hello, We are CureSync!!
+            Hello, We are Caresync!!
           </h2>
           <IoRemoveOutline size={80} />
           <p className="text-2xl flex w-full justify-center mb-6">

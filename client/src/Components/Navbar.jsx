@@ -122,7 +122,7 @@ export const Navbar = () => {
             <Link to={"/"}>Home</Link>
           </li>
           <li>
-            <Link to={"/chatBotHelp"}>Chat with Curesync AI</Link>
+            <Link to={"/chatBotHelp"}>Chat with Caresync AI</Link>
           </li>
           <li>
             <Link to={"/appointment"}>Appointment</Link>

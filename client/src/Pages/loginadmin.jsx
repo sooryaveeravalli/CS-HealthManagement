@@ -95,7 +95,7 @@ const loginadmin = () => {
           <Link to={"/"}>
             <img className="w-40 mb-10" src="./image.png" alt="" />
           </Link>
-          <h1 className="text-3xl font-semibold">CureSync</h1>
+          <h1 className="text-3xl font-semibold">Caresync</h1>
         </div>
       </div>
     </>
