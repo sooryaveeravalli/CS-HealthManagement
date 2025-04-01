@@ -299,32 +299,70 @@ export const getUserDetails = asyncHandler(async (req, res, next) => {
 
 /*::::::::::::::::::::::::::::::::::::::::::::::: USER-LOGIN :::::::::::::::::::::::::::::::::::::::::::::::::::::::*/
 
-export const userLogin=asyncHandler(async (req, res, next)=>{
-  const {email, password, confirmPassword, role}=req.body;
-  if(!email || !password || !confirmPassword || !role) throw new ErrorHandler("Please fill all the fields", 400);
+// export const userLogin=asyncHandler(async (req, res, next)=>{
+//   const {email, password, confirmPassword, role}=req.body;
+//   if(!email || !password || !confirmPassword || !role) throw new ErrorHandler("Please fill all the fields", 400);
 
-  if(password !== confirmPassword){
-    throw new ErrorHandler("Password and confirm password does not match", 400);
-  } 
+//   if(password !== confirmPassword){
+//     throw new ErrorHandler("Password and confirm password does not match", 400);
+//   } 
 
-  const user= await User.findOne({email}).select("+password");  //fetches user data with the pswd field which was turned off for fetching in model
-  if(!user){
+//   const user= await User.findOne({email}).select("+password");  //fetches user data with the pswd field which was turned off for fetching in model
+//   if(!user){
+//     throw new ErrorHandler("Invalid email", 400);
+//   }
+
+//   const isPasswordMatch = await user.comparePassword(password);
+//   if(!isPasswordMatch){
+//     throw new ErrorHandler("Invalid password", 400);
+//   }
+
+//   if(role!==user.role){
+//     throw new ErrorHandler("User with this role is not found", 404);
+//   }
+
+//   const payload = await User.findOne({ email }).select("-password");
+//   generateToken(payload, "User logged in successfully!", 200, res);
+//   // res.status(200).json({success:true, message: "User logged in successfully!"})
+// })
+
+export const userLogin = asyncHandler(async (req, res, next) => {
+  const { email, password, confirmPassword, role } = req.body;
+
+  if (!email || !password || !confirmPassword || !role) {
+    throw new ErrorHandler("Please fill all the fields", 400);
+  }
+
+  if (password !== confirmPassword) {
+    throw new ErrorHandler("Password and confirm password do not match", 400);
+  }
+
+  let userModel;
+
+  // Determine which model to query based on role
+  if (role === "Patient") {
+    userModel = Patient;
+  } else if (role === "Doctor") {
+    userModel = Doctor;
+  } else {
+    throw new ErrorHandler("Invalid role specified", 400);
+  }
+
+  // Find user in the appropriate model
+  const user = await userModel.findOne({ email }).select("+password");
+  if (!user) {
     throw new ErrorHandler("Invalid email", 400);
   }
 
   const isPasswordMatch = await user.comparePassword(password);
-  if(!isPasswordMatch){
+  if (!isPasswordMatch) {
     throw new ErrorHandler("Invalid password", 400);
   }
 
-  if(role!==user.role){
-    throw new ErrorHandler("User with this role is not found", 404);
-  }
-
-  const payload = await User.findOne({ email }).select("-password");
-  generateToken(payload, "User logged in successfully!", 200, res);
-  // res.status(200).json({success:true, message: "User logged in successfully!"})
-})
+  // Generate token
+  const payload = await userModel.findOne({ email }).select("-password");
+  generateToken(payload, `${role} logged in successfully!`, 200, res);
+});
 
 /*::::::::::::::::::::::::::::::::::::::::::::::: USER-LOGOUT :::::::::::::::::::::::::::::::::::::::::::::::::::::::*/
 
