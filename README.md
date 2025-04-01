@@ -20,12 +20,7 @@ Welcome to CureSync, a cutting-edge platform designed to revolutionize healthcar
 
 ### 1.1 Purpose
 
-The purpose of this document is to provide a comprehensive overview of the requirements for the e-HMS (Electronic Health Management System) website. This system is designed to streamline and manage healthcare services, including patient appointments, doctor schedules, and administrative tasks, with integrated machine learning for health predictions.
-
-### 1.2 Scope
-
-The e-HMS website is a centralized platform built using the MERN stack. It includes three main user modules (Patient, Doctor, Admin) and integrates several machine learning models to predict health conditions. The system supports secure user authentication and data management, cloud-based image storage, and robust form validation.
-
+The purpose of this document is to provide a comprehensive overview of the requirements for the HMS (Health Management System) website. This system is designed to streamline and manage healthcare services, including patient appointments, AI telehealth, doctor schedules, and administrative tasks, with integrated machine learning for health predictions.
 
 
 2\. Description
@@ -39,10 +34,8 @@ The e-HMS website is designed to be a standalone application that integrates var
 
 -   **Patient Module**: Appointment booking, dashboard for viewing appointment status.
 -   **Doctor Module**: Personalized dashboard for managing appointments (accept/reject).
--   **Admin Module**: User management (add/remove doctors and admins), query handling.
 -   **Frontend**: UI is developed using React and tailwindCSS.
 -   **Backend**: The native server is built using Node and Express with RESTful API design.
--   **Machine Learning Models**: Predictive analytics for heart disease, diabetes, and thyroid conditions.
 -   **Secure Authentication**: Stateful JWT for managing user sessions.
 -   **Cloud Storage**: Cloudinary for managing image uploads.
 -   **Form Validation**: Zod for validating user inputs.
@@ -59,8 +52,6 @@ The e-HMS website is designed to be a standalone application that integrates var
 -   **Frontend**: React.js, compatible with modern web browsers.
 -   **Backend**: Node.js with Express.js, hosted on a server or cloud platform.
 -   **Database**: MongoDB, either locally hosted or cloud-based (e.g., MongoDB Atlas).
--   **Cloud Storage**: Cloudinary for image storage.
--   **Machine Learning API**: Flask-based API for model integration.
 
 ### 2.5 Design and Implementation Constraints
 
