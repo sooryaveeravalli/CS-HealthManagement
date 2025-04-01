@@ -21,6 +21,7 @@ import { Context } from "./main";
 import Test from "./Pages/test";
 import DoctorHome from "./Pages/DoctorHome";
 import PatientHome from "./Pages/PatientHome";
+import ChatBotHelp from "./Pages/ChatBotHelp";
 
 
 import Testapp from "./test/testapp";
@@ -57,6 +58,7 @@ const App = () => {
           <Route path="/logindoctor" element={<Logindoctor />} />
           <Route path="/loginadmin" element={<Loginadmin />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/chatBotHelp" element={<ChatBotHelp />} />
           <Route path="/register-doctor" element={<RegisterDoctor />} />
           <Route path="/admin" element={<AdminHome />} />
           <Route path="/messages" element={<MessagesDisp />} />

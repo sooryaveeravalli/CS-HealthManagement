@@ -9,7 +9,13 @@ import messageRouter from "./routes/msg.routes.js";
 import fileUpload from "express-fileupload";
 import cloudinary from "cloudinary";
 import appointmentRouter from "./routes/appoinment.routes.js";
-dotenv.config({ path: "./.env" });
+import chatRouter from "./routes/chat.routes.js";
+try {
+  dotenv.config({ path: "./.env", debug: true });
+  console.log("dotenv loaded");
+} catch (error) {
+  console.error("Error loading dotenv or environment variables:", error);
+}
 const app = express();
 const PORT = process.env.PORT || 8000;
 
@@ -53,6 +59,7 @@ app.get("/", (req, res) =>
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/message", messageRouter);
 app.use("/api/v1/appoinments", appointmentRouter);
+app.use("/api/v1/chat", chatRouter);
 
 //error-middleware
 app.use(errorMiddleware);
