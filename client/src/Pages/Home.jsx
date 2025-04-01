@@ -30,7 +30,7 @@ const Home = () => {
       <img className="w-3/4 lg:w-4/5" src="/doctor-patient.png" alt="Doctor with Patient" />
     </div>
     <div className="hero-text w-3/5 flex flex-col items-center text-center space-y-4">
-      <h1 className="font-bold text-5xl">We are CureSync</h1>
+      <h1 className="font-bold text-5xl">We are Caresync</h1>
       <h1 className="text-4xl">We are here to provide world</h1>
       <h1 className="text-4xl">class healthcare for everyone</h1>
     </div>

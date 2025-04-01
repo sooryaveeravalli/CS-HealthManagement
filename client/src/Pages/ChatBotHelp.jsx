@@ -31,11 +31,11 @@ const ChatBotHelp = () => {
         <div className="sec-1 w-full h-full bg-gradient-to-tl from-[#76dbcf]">
             <Navbar />
             <div className="header w-full flex justify-center mt-7">
-                <h1 className="font-semibold text-2xl">Chat with Curesync AI</h1>
+                <h1 className="font-semibold text-2xl">Chat with Caresync AI</h1>
             </div>
             <div className="chat-container p-5 flex justify-center items-center">
                 <div className="chat-box bg-white w-3/4 h-[840px] rounded-3xl p-6 shadow-lg">
-                    <h2 className="text-xl font-bold mb-4">Welcome to Curesync AI!</h2>
+                    <h2 className="text-xl font-bold mb-4">Welcome to Caresync AI!</h2>
                     <div className="chat-ui bg-gray-100 h-[700px] rounded-lg p-4 overflow-y-auto">
                         {messages.map((msg, index) => (
                             <div key={index} className={`mb-2 ${msg.sender === "user" ? "text-right" : "text-left"}`}>

@@ -8,7 +8,7 @@ export const Footer = () => {
         <ul>
           <h6 className="text-slate-600">Home</h6>
           <h6 className="text-slate-600">Appointments</h6>
-          <h6 className="text-slate-600">Chat with CureSync AI</h6>
+          <h6 className="text-slate-600">Chat with Caresync AI</h6>
         </ul>
       </div>
       <div className="">
@@ -24,7 +24,7 @@ export const Footer = () => {
           </li>
           <li className="flex items-center">
             <img src="/email.png" alt="" className="w-4 h-4" />
-            <h6 className="text-slate-600">&nbsp;curesync@umass.edu</h6>
+            <h6 className="text-slate-600">&nbsp;Caresync@umass.edu</h6>
           </li>
           <li className="flex items-center">
             <img src="/pin.png" alt="" className="w-4 h-4" />
