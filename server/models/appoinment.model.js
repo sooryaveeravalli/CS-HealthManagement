@@ -1,6 +1,30 @@
 import mongoose from "mongoose";
 import validator from "validator";
 
+const shiftSchema = new mongoose.Schema({
+  doctorId: {
+    type: mongoose.Schema.ObjectId,
+    required: [true, "Doctor Id Is Required!"],
+    ref: "Doctor"
+  },
+  date: {
+    type: Date,
+    required: [true, "Shift Date Is Required!"],
+  },
+  startTime: {
+    type: String,
+    required: [true, "Start Time Is Required!"],
+  },
+  endTime: {
+    type: String,
+    required: [true, "End Time Is Required!"],
+  },
+  isAvailable: {
+    type: Boolean,
+    default: true
+  }
+});
+
 const appointmentSchema = new mongoose.Schema({
   firstName: {
     type: String,
@@ -26,21 +50,29 @@ const appointmentSchema = new mongoose.Schema({
   nic: {
     type: String,
     required: [true, "NIC Is Required!"],
-    minLength: [13, "NIC Must Contain Only 13 Digits!"],
-    maxLength: [13, "NIC Must Contain Only 13 Digits!"],
+    validate: {
+      validator: function(v) {
+        return /^(\d{12}|\d{9}[VX])$/.test(v);
+      },
+      message: "NIC must be either 12 digits or 9 digits followed by V/X"
+    },
   },
   dob: {
     type: Date,
     required: [true, "DOB Is Required!"],
   },
-  gender: {
+  patientGender: {
     type: String,
-    required: [true, "Gender Is Required!"],
-    enum: ["Male", "Female"],
+    required: [true, "Patient Gender Is Required!"],
+    enum: ["Male", "Female", "Other"],
   },
   appointment_date: {
     type: Date,
     required: [true, "Appointment Date Is Required!"],
+  },
+  appointment_time: {
+    type: String,
+    required: [true, "Appointment Time Is Required!"],
   },
   department: {
     type: String,
@@ -55,6 +87,11 @@ const appointmentSchema = new mongoose.Schema({
       type: String,
       required: [true, "Doctor Name Is Required!"],
     },
+    gender: {
+      type: String,
+      required: [true, "Doctor Gender Is Required!"],
+      enum: ["Male", "Female", "Other"],
+    }
   },
   hasVisited: {
     type: Boolean,
@@ -75,9 +112,21 @@ const appointmentSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ["Pending", "Accepted", "Rejected"],
-    default: "Pending",
+    enum: ["Booked", "Cancelled", "Rescheduled"],
+    default: "Booked"
   },
+  shiftId: {
+    type: mongoose.Schema.ObjectId,
+    ref: "Shift",
+    required: [true, "Shift Id Is Required!"],
+  },
+  reason: {
+    type: String,
+    required: [true, "Reason for appointment is required!"],
+  }
+}, {
+  timestamps: true
 });
 
+export const Shift = mongoose.model("Shift", shiftSchema);
 export const Appointment = mongoose.model("Appointment", appointmentSchema);

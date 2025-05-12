@@ -27,22 +27,22 @@ const logindoctor = () => {
         }
       );
 
-      const { token, user } = response.data; 
-      localStorage.setItem("authToken", token); // Save the token to localStorage
-      localStorage.setItem("doctor", JSON.stringify(user));
-
+      // The cookie will be automatically set by the server
+      // We only need to store the user data in localStorage
+      localStorage.setItem("doctor", JSON.stringify(response.data.user));
+      
       toast.success(response.data.message);
       setIsAuthenticated(true);
-      navigateTo("/");
+      navigateTo("/doctor-home");
       setEmail("");
       setPassword("");
     } catch (error) {
-      toast.error(error.response.data.message);
+      toast.error(error.response?.data?.message || "Login failed");
     }
   };
 
   if (isAuthenticated) {
-    return <Navigate to={"/"} />;
+    return <Navigate to={"/doctor-home"} />;
   }
   return (
     <>

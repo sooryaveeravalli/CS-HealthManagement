@@ -22,11 +22,11 @@ const PORT = process.env.PORT || 8000;
 //middlewares
 app.use(
   cors({
-    // origin: process.env.CLINET_ORIGIN,
-    origin: "http://localhost:5173",  
-    methods: "GET,POST,PUT,DELETE",
-    allowedHeaders: "Content-Type,Authorization",
+    origin: "http://localhost:5173",
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization", "Cookie"],
     credentials: true,
+    exposedHeaders: ["Set-Cookie"]
   })
 );
 app.use(cookieParser());

@@ -1,85 +1,133 @@
 import React from "react";
 import { IoMdCloseCircleOutline } from "react-icons/io";
-import { useState } from "react";
-import { useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { Context } from "../main";
 
 const AppointForm = ({ data, onClose}) => {
   if(!data)return null;
-  console.log(data)
 
-  const docfirst = data.firstName
-  const doclast = data.lastName
-  const dept = data.doctorDepartment
-  console.log(docfirst,doclast,dept);
+  const docfirst = data.firstName;
+  const doclast = data.lastName;
+  const dept = data.doctorDepartment;
+  const { user } = useContext(Context);
 
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
-  const [nic, setNic] = useState("");
-  const [dob, setDob] = useState("");
-  const [gender, setGender] = useState("");
-  const [appointmentDate, setAppointmentDate] = useState("");
-  const [department, setDepartment] = useState("Pediatrics");
-  const [doctorFirstName, setDoctorFirstName] = useState("");
-  const [doctorLastName, setDoctorLastName] = useState("");
-  const [address, setAddress] = useState("");
-  const [hasVisited, setHasVisited] = useState(false);
+  const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    phone: "",
+    nic: "",
+    dob: "",
+    patientGender: "",
+    appointmentDate: "",
+    address: "",
+    hasVisited: false
+  });
+
+  const [departments, setDepartments] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    fetchDepartments();
+  }, []);
+
+  const fetchDepartments = async () => {
+    try {
+      const { data } = await axios.get('http://localhost:8000/api/v1/appoinments/departments');
+      setDepartments(data.departments);
+    } catch (error) {
+      toast.error('Error fetching departments');
+    }
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: type === 'checkbox' ? checked : value
+    }));
+  };
+
+  const validateForm = () => {
+    if (!formData.firstName || !formData.lastName || !formData.email || !formData.phone || 
+        !formData.nic || !formData.dob || !formData.patientGender || !formData.appointmentDate || 
+        !formData.address) {
+      toast.error('Please fill in all required fields');
+      return false;
+    }
+
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      toast.error('Please enter a valid email address');
+      return false;
+    }
+
+    // Validate phone number (assuming 10 digits)
+    const phoneRegex = /^\d{10}$/;
+    if (!phoneRegex.test(formData.phone)) {
+      toast.error('Please enter a valid 10-digit phone number');
+      return false;
+    }
+
+    // Validate appointment date (must be future date)
+    const selectedDate = new Date(formData.appointmentDate);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    if (selectedDate < today) {
+      toast.error('Please select a future date for the appointment');
+      return false;
+    }
+
+    return true;
+  };
+
   const handleAppointment = async (e) => {
     e.preventDefault();
+    
+    if (!validateForm()) {
+      return;
+    }
+
+    setLoading(true);
     try {
-      const hasVisitedBool = Boolean(hasVisited);
-      // const docfirst = doctor[0];
-      // console.log(docfirst)
-      // console.log("first")
-      // const doclast = doctor[1];
-      // const dept = doctor[2];
-      const response= await axios.post(
+      const response = await axios.post(
         "http://localhost:8000/api/v1/appoinments/post",
         {
-          firstName,
-          lastName,
-          email,
-          phone,
-          nic,
-          dob,
-          gender,
-          appointment_date: appointmentDate,
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          email: formData.email,
+          phone: formData.phone,
+          nic: formData.nic,
+          dob: formData.dob,
+          patientGender: formData.patientGender,
+          appointment_date: formData.appointmentDate,
+          appointment_time: data.startTime,
           department: dept,
-          doctor_firstName: docfirst,
-          doctor_lastName: doclast,
-          hasVisited: hasVisitedBool,
-          address,
+          doctorId: data._id,
+          shiftId: data.shiftId,
+          address: formData.address,
+          reason: "Regular checkup",
+          patientId: user._id
         },
         {
           withCredentials: true,
           headers: { "Content-Type": "application/json" },
         }
       );
-      // console.log(response)
+      
       toast.success(response.data.message);
-      setFirstName(""),
-        setLastName(""),
-        setEmail(""),
-        setPhone(""),
-        setNic(""),
-        setDob(""),
-        setGender(""),
-        setAppointmentDate(""),
-        setDepartment(""),
-        setDoctorFirstName(""),
-        setDoctorLastName(""),
-        setHasVisited(""),
-        setAddress("");
+      onClose(); // Close the form after successful submission
     } catch (error) {
-      toast.error(error.response.data.message);
+      toast.error(error.response?.data?.message || 'Error booking appointment');
+    } finally {
+      setLoading(false);
     }
   };
-  // const [firstname, lastname, depart] = doctor;
-  // console.log();
+
   return (
     <div className="fixed inset-0 bg-opacity-30 backdrop-blur-sm flex justify-center items-center">
       <div className="w-2/3 flex flex-col">
@@ -94,101 +142,116 @@ const AppointForm = ({ data, onClose}) => {
             className="w-full flex flex-col justify-center items-center"
             onSubmit={handleAppointment}
           >
-            <div className=" w-full flex justify-around mb-6">
+            <div className="w-full flex justify-around mb-6">
               <input
                 className="w-96 h-10 bg-zinc-200 rounded-2xl px-4 outline-none"
                 type="text"
+                name="firstName"
                 placeholder="First Name"
-                value={firstName}
-                onChange={(e) => setFirstName(e.target.value)}
+                value={formData.firstName}
+                onChange={handleInputChange}
+                required
               />
               <input
                 className="w-96 h-10 bg-zinc-200 rounded-2xl px-4 outline-none"
                 type="text"
+                name="lastName"
                 placeholder="Last Name"
-                value={lastName}
-                onChange={(e) => setLastName(e.target.value)}
+                value={formData.lastName}
+                onChange={handleInputChange}
+                required
               />
             </div>
-            <div className=" w-full flex justify-around mb-6">
+            <div className="w-full flex justify-around mb-6">
               <input
                 className="w-96 h-10 bg-zinc-200 rounded-2xl px-4 outline-none"
-                type="text"
+                type="email"
+                name="email"
                 placeholder="Email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                value={formData.email}
+                onChange={handleInputChange}
+                required
               />
               <input
                 className="w-96 h-10 bg-zinc-200 rounded-2xl px-4 outline-none"
-                type="number"
+                type="tel"
+                name="phone"
                 placeholder="Phone No"
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
+                value={formData.phone}
+                onChange={handleInputChange}
+                required
               />
             </div>
             <div className="w-full flex justify-around mb-6">
               <input
                 className="w-96 h-10 bg-zinc-200 rounded-2xl px-4 outline-none"
                 type="text"
-                placeholder="Aadhar No."
-                value={nic}
-                onChange={(e) => setNic(e.target.value)}
+                name="nic"
+                placeholder="NIC"
+                value={formData.nic}
+                onChange={handleInputChange}
+                required
               />
-              <input
-                className="w-96 h-10 bg-zinc-200 rounded-2xl px-4 outline-none"
-                type="text"
-                placeholder="Dob"
-                value={dob}
-                onChange={(e) => setDob(e.target.value)}
-              />
-            </div>
-            <div className=" w-full flex justify-around mb-6">
-              <label className="w-96 h-10 bg-zinc-200 rounded-2xl px-4">
-                <select
-                  className="w-full h-10 bg-zinc-200 rounded-2xl  border-0 outline-none"
-                  name="selectedGender"
-                  value={gender}
-                  onChange={(e) => setGender(e.target.value)}
-                >
-                  <option className="w-fit" value="">
-                    Gender
-                  </option>
-                  <option value="Male">Male</option>
-                  <option value="Female">Female</option>
-                  <option value="Other">prefer not to say</option>
-                </select>
-              </label>
               <input
                 className="w-96 h-10 bg-zinc-200 rounded-2xl px-4 outline-none"
                 type="date"
-                placeholder="Appointment date"
-                value={appointmentDate}
-                onChange={(e) => setAppointmentDate(e.target.value)}
+                name="dob"
+                value={formData.dob}
+                onChange={handleInputChange}
+                required
+              />
+            </div>
+            <div className="w-full flex justify-around mb-6">
+              <select
+                className="w-96 h-10 bg-zinc-200 rounded-2xl px-4 outline-none"
+                name="patientGender"
+                value={formData.patientGender}
+                onChange={handleInputChange}
+                required
+              >
+                <option value="">Select Gender</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Other">Prefer not to say</option>
+              </select>
+              <input
+                className="w-96 h-10 bg-zinc-200 rounded-2xl px-4 outline-none"
+                type="date"
+                name="appointmentDate"
+                value={formData.appointmentDate}
+                onChange={handleInputChange}
+                required
               />
             </div>
             <div className="w-full px-14">
               <textarea
-                className=" w-full bg-zinc-200 rounded-2xl px-4 py-2 outline-none"
+                className="w-full bg-zinc-200 rounded-2xl px-4 py-2 outline-none"
                 rows="3"
-                value={address}
-                onChange={(e) => setAddress(e.target.value)}
+                name="address"
+                value={formData.address}
+                onChange={handleInputChange}
                 placeholder="Address"
+                required
               />
             </div>
-            <div className="w-full px-14 flex gap-10 flex-start">
+            <div className="w-full px-14 flex gap-10 items-center">
               <p>Have you visited before?</p>
               <input
                 type="checkbox"
-                checked={hasVisited}
-                onChange={(e) => setHasVisited(e.target.checked)}
+                name="hasVisited"
+                checked={formData.hasVisited}
+                onChange={handleInputChange}
               />
             </div>
             <div className="flex w-full justify-center mt-3">
               <button
-                className="w-96 bg-[#76dbcf] rounded-2xl h-10 font-semibold"
+                className={`w-96 bg-[#76dbcf] rounded-2xl h-10 font-semibold ${
+                  loading ? 'opacity-50 cursor-not-allowed' : 'hover:bg-[#5bc4b7]'
+                }`}
                 type="submit"
+                disabled={loading}
               >
-                Confirm Appointment
+                {loading ? 'Booking...' : 'Confirm Appointment'}
               </button>
             </div>
           </form>

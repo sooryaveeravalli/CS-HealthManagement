@@ -22,7 +22,10 @@ import Test from "./Pages/test";
 import DoctorHome from "./Pages/DoctorHome";
 import PatientHome from "./Pages/PatientHome";
 import ChatBotHelp from "./Pages/ChatBotHelp";
-
+import ShiftManagement from "./Components/ShiftManagement";
+import BookAppointment from "./Components/BookAppointment";
+import PatientAppointments from "./Components/PatientAppointments";
+import DoctorAppointments from "./Components/DoctorAppointments";
 
 import Testapp from "./test/testapp";
 
@@ -69,6 +72,10 @@ const App = () => {
           <Route path="/patient-home" element={<PatientHome />} />
           <Route path="/doctor-home" element={<DoctorHome />} />
           <Route path="/testapp" element={<Testapp/>} />
+          <Route path="/doctor/shifts" element={<ShiftManagement />} />
+          <Route path="/doctor/appointments" element={<DoctorAppointments />} />
+          <Route path="/patient/book-appointment" element={<BookAppointment />} />
+          <Route path="/patient/appointments" element={<PatientAppointments />} />
         </Routes>
         <ToastContainer position="top-center" />
       </Router>
