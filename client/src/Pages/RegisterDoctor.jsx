@@ -79,6 +79,9 @@ const RegisterDoctor = () => {
   return (
     <div className="flex">
       <div className="w-1/3 h-screen bg-[#76dbcf] flex flex-col place-content-center items-center rounded-r-full">
+        <Link to={"/"}>
+          <img className="w-40 mb-10" src="./image.png" alt="" />
+        </Link>
         <h2 className="text-4xl flex w-full justify-center font-bold">
           Hello, We are Caresync!!
         </h2>

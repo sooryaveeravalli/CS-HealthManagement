@@ -39,7 +39,6 @@ const Home = () => {
 
 
 
-      <ChatBubble />
       {/* Message Section + footer */}
       <div className="sec-1 w-full h-fit bg-gradient-to-tr from-cyan-300 to-green-200">
 

@@ -124,6 +124,9 @@ const login = () => {
           </div>
         </div>
         <div className="w-1/2 h-screen bg-[#76dbcf] flex flex-col place-content-center items-center rounded-l-full">
+          <Link to={"/"}>
+            <img className="w-40 mb-10" src="./image.png" alt="" />
+          </Link>
           <h2 className="text-4xl flex w-full justify-center font-bold">
             Hello, We are Caresync!!
           </h2>

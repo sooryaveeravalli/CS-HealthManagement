@@ -14,6 +14,12 @@ const logindoctor = () => {
   const [password, setPassword] = useState("");
 
   const navigateTo = useNavigate();
+  const goToRegisterDoctor = () => {
+    navigateTo("/register-doctor");
+  };
+  const goToHome = () => {
+    navigateTo("/");
+  };
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -22,13 +28,11 @@ const logindoctor = () => {
         "http://localhost:8000/api/v1/users/login",
         { email, password, confirmPassword: password, role: "Doctor" },
         {
-          headers: { "Content-Type": "application/json" },
           withCredentials: true,
+          headers: { "Content-Type": "application/json" },
         }
       );
 
-      // The cookie will be automatically set by the server
-      // We only need to store the user data in localStorage
       localStorage.setItem("doctor", JSON.stringify(response.data.user));
       
       toast.success(response.data.message);
@@ -44,6 +48,7 @@ const logindoctor = () => {
   if (isAuthenticated) {
     return <Navigate to={"/doctor-home"} />;
   }
+
   return (
     <>
       <div className="flex">
@@ -91,7 +96,25 @@ const logindoctor = () => {
           <Link to={"/"}>
             <img className="w-40 mb-10" src="./image.png" alt="" />
           </Link>
-          <h1 className="text-3xl font-semibold">Caresync</h1>
+          <h2 className="text-4xl flex w-full justify-center font-bold">
+            Hello, We are Caresync!!
+          </h2>
+          <IoRemoveOutline size={80} />
+          <p className="text-2xl flex w-full justify-center mb-6">
+            We care for our patient's health
+          </p>
+          <button
+            className="w-40 rounded-2xl h-10 font-semibold border-solid border-2 border-black"
+            onClick={goToRegisterDoctor}
+          >
+            Sign Up
+          </button>
+          <button
+            className="w-44 mt-5 rounded-2xl h-10 font-semibold border-solid border-2 border-black"
+            onClick={goToHome}
+          >
+            Home
+          </button>
         </div>
       </div>
     </>

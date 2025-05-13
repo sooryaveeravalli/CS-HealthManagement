@@ -181,11 +181,8 @@ export const Navbar = () => {
                 <Link to={"/login"} className="py-2">
                   Patient
                 </Link>
-                <Link to={"/logindoctor"} state="Doctor" className="">
+                <Link to={"/logindoctor"} state="Doctor" className="py-2">
                   Doctor
-                </Link>
-                <Link to={"/loginadmin"} state="Admin" className="py-2">
-                  Admin
                 </Link>
               </div>
             )}
