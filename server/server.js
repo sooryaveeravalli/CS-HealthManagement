@@ -10,6 +10,8 @@ import fileUpload from "express-fileupload";
 import cloudinary from "cloudinary";
 import appointmentRouter from "./routes/appoinment.routes.js";
 import chatRouter from "./routes/chat.routes.js";
+import healthRecordsRouter from "./routes/healthRecords.js";
+
 try {
   dotenv.config({ path: "./.env", debug: true });
   console.log("dotenv loaded");
@@ -60,11 +62,12 @@ app.use("/api/v1/users", userRouter);
 app.use("/api/v1/message", messageRouter);
 app.use("/api/v1/appoinments", appointmentRouter);
 app.use("/api/v1/chat", chatRouter);
+app.use("/api/v1/health-records", healthRecordsRouter);
 
 //error-middleware
 app.use(errorMiddleware);
 
-//cloudinary init
+//cloudinary inita
 cloudinary.v2.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,

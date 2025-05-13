@@ -5,7 +5,7 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { GoCheckCircleFill } from "react-icons/go";
 import { AiFillCloseCircle } from "react-icons/ai";
-import { Navbar } from "../Components/Navbar";
+import { NavbarDoctor } from "../Components/NavbarDoctor";
 import { TicketX } from "lucide-react";
 import { TicketCheck } from "lucide-react";
 import { Calendar, Clock, List } from "lucide-react";
@@ -59,7 +59,7 @@ const DoctorHome = () => {
 
   return (
     <div className="w-full min-h-screen bg-gradient-to-tl from-[#76dbcf]">
-      <Navbar />
+      <NavbarDoctor />
       <div className="h-28 flex justify-around mt-10">
         <div className="w-1/3 font-semibold text-3xl flex gap-5 items-center">
           <img

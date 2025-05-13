@@ -127,6 +127,9 @@ export const Navbar = () => {
           <li>
             <Link to={"/appointment"}>Appointment</Link>
           </li>
+          <li>
+            <Link to={"/health-records"}>Health Records</Link>
+          </li>
           {/* <li>
             <Link to={"/aboutus"}>About us</Link>
           </li>

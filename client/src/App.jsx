@@ -4,6 +4,8 @@ import "react-toastify/dist/ReactToastify.css";
 import Home from "./Pages/Home";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import Appointment from "./Pages/Appointment";
+import HealthRecordsPage from "./Pages/HealthRecordsPage";
+import CreateHealthRecord from "./Pages/CreateHealthRecord";
 import QuickHelp from "./Pages/QuickHelp";
 import Login from "./Pages/login";
 import Register from "./Pages/Register";
@@ -26,7 +28,8 @@ import ShiftManagement from "./Components/ShiftManagement";
 import BookAppointment from "./Components/BookAppointment";
 import PatientAppointments from "./Components/PatientAppointments";
 import DoctorAppointments from "./Components/DoctorAppointments";
-import axios from "axios";
+import axios from "axios";import PatientHealthRecords from "./Components/PatientHealthRecords";
+
 import Testapp from "./test/testapp";
 
 // Protected Route Component
@@ -68,6 +71,10 @@ const App = () => {
         <Routes>
           {/* Public Routes */}
           <Route path="/" element={<Home />} />
+          <Route path="/appointment" element={<Appointment />} />
+          <Route path="/health-records" element={<HealthRecordsPage />} />
+          <Route path="/create-health-records" element={<CreateHealthRecord />} />
+          <Route path="/quick-help" element={<QuickHelp />} />
           <Route path="/login" element={<Login />} />
           <Route path="/logindoctor" element={<Logindoctor />} />
           <Route path="/loginadmin" element={<Loginadmin />} />
