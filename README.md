@@ -1,70 +1,129 @@
-# cs520-healthmanagementsystem
-CS 520 - Health Management System ; Team_19
+# Caresync - Healthcare Management System
 
-# Steps to run the project  
-In Server directory:  
-npm install  
-npm start  
+A modern healthcare management platform built with the MERN stack, designed to streamline healthcare services and improve patient care.
 
-In client directory:  
-npm install  
-npm run dev  
+## 🚀 Quick Start
 
+### Prerequisites
+- Node.js (v14 or higher)
+- MongoDB
+- npm or yarn
 
-# E-Healthcare Management System
+### Installation
 
-Welcome to Caresync, a cutting-edge platform designed to revolutionize healthcare delivery and management. Built with the powerful MERN stack, our system ensures a seamless and efficient experience for both healthcare providers and patients.
+1. **Clone the repository**
+```bash
+git clone https://github.com/your-username/cs520-healthmanagementsystem.git
+cd cs520-healthmanagementsystem
+```
 
-1\. Introduction
-----------------
+2. **Backend Setup**
+```bash
+cd server
+npm install
+# Create a .env file with the following variables:
+# ATLAS_URI=your_mongodb_connection_string
+# JWT_SECRET=your_jwt_secret
+# JWT_EXPIRES=7d
+# PORT=8000
+npm run dev
+```
 
-### 1.1 Purpose
+3. **Frontend Setup**
+```bash
+cd client
+npm install
+npm run dev
+```
 
-The purpose of this document is to provide a comprehensive overview of the requirements for the HMS (Health Management System) website. This system is designed to streamline and manage healthcare services, including patient appointments, AI telehealth, doctor schedules, and administrative tasks, with integrated machine learning for health predictions.
+The application will be available at:
+- Frontend: http://localhost:5173
+- Backend: http://localhost:8000
 
+## 🛠️ Tech Stack
 
-2\. Description
------------------------
+### Frontend
+- React.js (v18.2.0)
+- Vite
+- Tailwind CSS
+- React Router DOM
+- Axios
+- React Toastify
+- React Icons
 
-### 2.1 Product Perspective
+### Backend
+- Node.js
+- Express.js
+- MongoDB with Mongoose
+- JWT Authentication
+- Cloudinary
+- Zod Validation
 
-The e-HMS website is designed to be a standalone application that integrates various aspects of healthcare management. It provides a unified platform for patients, doctors, and administrators, enabling seamless interaction and data management.
+### Development Tools
+- Git & GitHub
+- Jest
+- React Testing Library
+- ESLint
+- Nodemon
 
-### 2.2 Product Features
+## ✨ Features
 
--   **Patient Module**: Appointment booking, dashboard for viewing appointment status.
--   **Doctor Module**: Personalized dashboard for managing appointments (accept/reject).
--   **Frontend**: UI is developed using React and tailwindCSS.
--   **Backend**: The native server is built using Node and Express with RESTful API design.
--   **Secure Authentication**: Stateful JWT for managing user sessions.
--   **Cloud Storage**: Cloudinary for managing image uploads.
--   **Form Validation**: Zod for validating user inputs.
--   **Database**: MongoDB for storing user and appointment data.
+### Patient Features
+- User registration and authentication
+- Appointment booking and management
+- View medical history
+- Real-time appointment status updates
+- Secure profile management
 
-### 2.3 User Classes and Characteristics
+### Doctor Features
+- Personalized dashboard
+- Appointment management
+- Patient history access
+- Schedule management
+- Profile customization
 
--   **Patients**: Users who can book appointments and view their status. They require an intuitive interface and easy navigation.
--   **Doctors**: Users who manage appointments. They need a personalized dashboard to efficiently accept or reject appointments.
--   **Admins**: Users who manage the system, including adding/removing doctors and handling user queries. They need access to comprehensive user management tools.
+### Admin Features
+- User management
+- Doctor registration
+- System monitoring
+- Appointment oversight
+- Analytics dashboard
 
-### 2.4 Operating Environment
+## 🔒 Security Features
+- JWT-based authentication
+- Password encryption with bcrypt
+- Role-based access control
+- Secure file uploads
+- Input validation with Zod
 
--   **Frontend**: React.js, compatible with modern web browsers.
--   **Backend**: Node.js with Express.js, hosted on a server or cloud platform.
--   **Database**: MongoDB, either locally hosted or cloud-based (e.g., MongoDB Atlas).
+## 🧪 Testing
+- Unit tests with Jest
+- Component testing with React Testing Library
+- API testing with Supertest
+- Integration tests
 
-### 2.5 Design and Implementation Constraints
+## 📝 API Documentation
+The API follows RESTful principles and includes endpoints for:
+- User authentication
+- Appointment management
+- Doctor operations
+- Patient records
+- Admin functions
 
--   **Scalability**: The system should be designed to handle a growing number of users and data.
--   **Security**: Data must be protected with secure authentication and storage practices.
--   **Performance**: The system should provide quick responses and minimal downtime.            
+## 🤝 Contributing
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
 
-### 2.6 **Benefits:**
+## 📄 License
+This project is licensed under the MIT License - see the LICENSE file for details.
 
-* **Enhanced Patient Care:** Streamlined processes and easy access to medical records improve patient outcomes.
-    
-* **Operational Efficiency:** Automated scheduling, billing, and record-keeping reduce administrative burdens.
-    
-* **Secure & Compliant:** Adherence to healthcare regulations ensures data privacy and security.
-    
-* **Scalable & Flexible:** The MERN stack provides a robust foundation that can scale with your needs.
+## 👥 Team
+- Team 19 - CS 520 Project
+
+## 🙏 Acknowledgments
+- MongoDB Atlas for database hosting
+- Cloudinary for image storage
+- All contributors and supporters of the project
