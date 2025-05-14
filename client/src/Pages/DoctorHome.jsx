@@ -53,7 +53,12 @@ const DoctorHome = () => {
   var c = 0;
   appointments.forEach((obj) => {
     if (obj.doctorId === doc._id) {
-      c++;
+      const appointmentDate = new Date(obj.appointment_date);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      if (appointmentDate >= today && obj.status !== "Cancelled") {
+        c++;
+      }
     }
   });
 

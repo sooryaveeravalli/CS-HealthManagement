@@ -10,6 +10,7 @@ import fileUpload from "express-fileupload";
 import cloudinary from "cloudinary";
 import appointmentRouter from "./routes/appoinment.routes.js";
 import chatRouter from "./routes/chat.routes.js";
+
 import healthRecordsRouter from "./routes/healthRecords.js";
 
 try {
@@ -18,6 +19,7 @@ try {
 } catch (error) {
   console.error("Error loading dotenv or environment variables:", error);
 }
+
 const app = express();
 const PORT = process.env.PORT || 8000;
 
@@ -46,15 +48,17 @@ app.use(
 
 //db connection
 const uri = `${process.env.ATLAS_URI}/hms`;
-mongoose
-  .connect(uri)
-  .then(() =>
-    console.log(`connected to MongoDB on: ${mongoose.connection.host}`)
-  )
-  .catch((err) => {
-    console.log("Error connecting to MongoDB!!\n", err);
-    process.exit(1);
-  });
+if (process.env.NODE_ENV !== 'test') {
+  mongoose
+    .connect(uri)
+    .then(() =>
+      console.log(`connected to MongoDB on: ${mongoose.connection.host}`)
+    )
+    .catch((err) => {
+      console.log("Error connecting to MongoDB!!\n", err);
+      process.exit(1);
+    });
+}
 
 //routes
 app.get("/", (req, res) =>
@@ -76,7 +80,11 @@ cloudinary.v2.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-//server
-app.listen(PORT, () =>
-  console.log(`server is running on: http://localhost:${PORT}`)
-);
+// Only start the server if this file is run directly
+if (process.env.NODE_ENV !== 'test') {
+  app.listen(PORT, () =>
+    console.log(`server is running on: http://localhost:${PORT}`)
+  );
+}
+
+export { app };

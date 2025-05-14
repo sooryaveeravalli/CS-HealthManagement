@@ -82,6 +82,11 @@ export const deleteDoctorShift = asyncHandler(async (req, res, next) => {
 export const getAvailableShifts = asyncHandler(async (req, res, next) => {
   const { date, department } = req.query;
 
+  // Validate required query parameters
+  if (!date || !department) {
+    return next(new ErrorHandler("Date and department are required", 400));
+  }
+
   const doctors = await Doctor.find({ doctorDepartment: department });
   const doctorIds = doctors.map(doctor => doctor._id);
 

@@ -35,7 +35,12 @@ const PatientHome = () => {
   var c = 0;
   appointments.forEach((obj) => {
     if (obj.patientId === pat._id) {
-      c++;
+      const appointmentDate = new Date(obj.appointment_date);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      if (appointmentDate >= today && obj.status !== "Cancelled") {
+        c++;
+      }
     }
   });
 
@@ -122,7 +127,9 @@ const PatientHome = () => {
             <tbody className="bg-white divide-y divide-gray-200">
               {appointments && appointments.length > 0 ? (
                 appointments
-                  .filter((appointment) => appointment.patientId === pat._id)
+                  .filter((appointment) => 
+                    appointment.patientId === pat._id
+                  )
                   .slice(0, 5)
                   .map((appointment) => (
                     <tr key={appointment._id}>

@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { toast } from "react-toastify";
+import { useNavigate } from 'react-router-dom';
 
 const PatientAppointments = () => {
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchAppointments();
@@ -51,15 +53,35 @@ const PatientAppointments = () => {
 
   return (
     <div className="container mx-auto p-4">
-      <h2 className="text-2xl font-bold mb-4">My Appointments</h2>
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-2xl font-bold">Upcoming Appointments</h2>
+        <button
+          onClick={() => navigate('/patient-home')}
+          className="px-4 py-2 bg-[#76dbcf] text-black rounded-2xl font-semibold hover:bg-[#5bc4b7] transition-colors"
+        >
+          Back to Patient Home
+        </button>
+      </div>
 
-      {appointments.length === 0 ? (
+      {appointments.filter(appointment => {
+        const appointmentDate = new Date(appointment.appointment_date);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        return appointmentDate >= today && appointment.status !== "Cancelled";
+      }).length === 0 ? (
         <div className="text-center py-8">
-          <p className="text-gray-600">No appointments found</p>
+          <p className="text-gray-600">No upcoming appointments found</p>
         </div>
       ) : (
         <div className="grid gap-4">
-          {appointments.map((appointment) => (
+          {appointments
+            .filter(appointment => {
+              const appointmentDate = new Date(appointment.appointment_date);
+              const today = new Date();
+              today.setHours(0, 0, 0, 0);
+              return appointmentDate >= today && appointment.status !== "Cancelled";
+            })
+            .map((appointment) => (
             <div
               key={appointment._id}
               className="bg-white rounded-lg shadow p-4"
@@ -67,9 +89,9 @@ const PatientAppointments = () => {
               <div className="flex justify-between items-start">
                 <div>
                   <h3 className="text-lg font-semibold">
-                    Dr. {appointment.doctorId.firstName} {appointment.doctorId.lastName}
+                    Dr. {appointment.doctor.firstName} {appointment.doctor.lastName}
                   </h3>
-                  <p className="text-gray-600">{appointment.doctorId.department}</p>
+                  <p className="text-gray-600">{appointment.doctor.department}</p>
                 </div>
                 <span
                   className={`px-3 py-1 rounded-full text-sm ${

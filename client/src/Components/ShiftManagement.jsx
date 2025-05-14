@@ -63,7 +63,17 @@ const ShiftManagement = () => {
       const { data } = await axios.get('http://localhost:8000/api/v1/appoinments/shifts/doctor', {
         withCredentials: true
       });
-      setShifts(data.shifts || []);
+      // Filter shifts to only include today and future dates
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const filteredShifts = (data.shifts || []).filter(shift => {
+        const shiftDate = new Date(shift.date);
+        shiftDate.setHours(0, 0, 0, 0);
+        return shiftDate >= today;
+      });
+      // Sort shifts by date
+      filteredShifts.sort((a, b) => new Date(a.date) - new Date(b.date));
+      setShifts(filteredShifts);
     } catch (error) {
       if (error.response?.status === 401) {
         toast.error('Please login to access this feature');
@@ -227,7 +237,7 @@ const ShiftManagement = () => {
               <div key={shift._id} className="p-4 flex justify-between items-center">
                 <div>
                   <p className="font-medium">
-                    {new Date(shift.date).toLocaleDateString()}
+                    {shift.date.split('T')[0].split('-').join('/')}
                   </p>
                   <p className="text-gray-600">
                     {shift.startTime} - {shift.endTime}

@@ -141,6 +141,7 @@ const AppointForm = ({ data, onClose}) => {
           <form
             className="w-full flex flex-col justify-center items-center"
             onSubmit={handleAppointment}
+            data-testid="appointment-form"
           >
             <div className="w-full flex justify-around mb-6">
               <input
@@ -151,6 +152,7 @@ const AppointForm = ({ data, onClose}) => {
                 value={formData.firstName}
                 onChange={handleInputChange}
                 required
+                data-testid="first-name-input"
               />
               <input
                 className="w-96 h-10 bg-zinc-200 rounded-2xl px-4 outline-none"
@@ -160,6 +162,7 @@ const AppointForm = ({ data, onClose}) => {
                 value={formData.lastName}
                 onChange={handleInputChange}
                 required
+                data-testid="last-name-input"
               />
             </div>
             <div className="w-full flex justify-around mb-6">
@@ -171,6 +174,7 @@ const AppointForm = ({ data, onClose}) => {
                 value={formData.email}
                 onChange={handleInputChange}
                 required
+                data-testid="email-input"
               />
               <input
                 className="w-96 h-10 bg-zinc-200 rounded-2xl px-4 outline-none"
@@ -180,6 +184,7 @@ const AppointForm = ({ data, onClose}) => {
                 value={formData.phone}
                 onChange={handleInputChange}
                 required
+                data-testid="phone-input"
               />
             </div>
             <div className="w-full flex justify-around mb-6">
@@ -191,6 +196,7 @@ const AppointForm = ({ data, onClose}) => {
                 value={formData.nic}
                 onChange={handleInputChange}
                 required
+                data-testid="nic-input"
               />
               <input
                 className="w-96 h-10 bg-zinc-200 rounded-2xl px-4 outline-none"
@@ -199,6 +205,7 @@ const AppointForm = ({ data, onClose}) => {
                 value={formData.dob}
                 onChange={handleInputChange}
                 required
+                data-testid="dob-input"
               />
             </div>
             <div className="w-full flex justify-around mb-6">
@@ -208,6 +215,7 @@ const AppointForm = ({ data, onClose}) => {
                 value={formData.patientGender}
                 onChange={handleInputChange}
                 required
+                data-testid="gender-select"
               >
                 <option value="">Select Gender</option>
                 <option value="Male">Male</option>
@@ -221,6 +229,7 @@ const AppointForm = ({ data, onClose}) => {
                 value={formData.appointmentDate}
                 onChange={handleInputChange}
                 required
+                data-testid="appointment-date-input"
               />
             </div>
             <div className="w-full px-14">
@@ -232,6 +241,7 @@ const AppointForm = ({ data, onClose}) => {
                 onChange={handleInputChange}
                 placeholder="Address"
                 required
+                data-testid="address-input"
               />
             </div>
             <div className="w-full px-14 flex gap-10 items-center">
@@ -241,6 +251,7 @@ const AppointForm = ({ data, onClose}) => {
                 name="hasVisited"
                 checked={formData.hasVisited}
                 onChange={handleInputChange}
+                data-testid="has-visited-checkbox"
               />
             </div>
             <div className="flex w-full justify-center mt-3">

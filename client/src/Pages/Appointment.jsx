@@ -5,9 +5,15 @@ import AppointForm from "../Components/AppointForm";
 import { Link, useNavigate } from "react-router-dom";
 import { Context } from "../main";
 import AppointDoctors from "../Components/AppointDoctors";
+import { toast } from "react-toastify";
 
 const Appointment = () => {
   const [selectedCard, setSelectedCard] = useState(null);
+  const [doctors, setDoctors] = useState([]);
+  const [appointments, setAppointments] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const { isAuthenticated } = useContext(Context);
+  const navigate = useNavigate();
 
   const handleCardClick = (cardData) => {
     setSelectedCard(cardData);
@@ -16,117 +22,413 @@ const Appointment = () => {
   const handleCloseModal = () => {
     setSelectedCard(null);
   };
-  const [doctors, setDoctors] = useState([]);
-  const { isAuthenticated } = useContext(Context);
+
+  const isDoctor = localStorage.getItem("doctor") !== null;
+  const isPatient = localStorage.getItem("patient") !== null;
+
   useEffect(() => {
-    const fetchDoctors = async () => {
+    const fetchData = async () => {
       try {
-        const {data} = await axios.get(
-          "http://localhost:8000/api/v1/users/doctors",
-          {
-            withCredentials: true,
-          }
-        );
-        // console.log(data.doctors);
-        setDoctors(data.doctors);
+        if (isDoctor) {
+          // Fetch all appointments for doctor
+          const { data } = await axios.get(
+            "http://localhost:8000/api/v1/appoinments/all",
+            { withCredentials: true }
+          );
+          setAppointments(data.appointments);
+        } else if (isPatient) {
+          // Fetch patient's appointments
+          const { data } = await axios.get(
+            "http://localhost:8000/api/v1/appoinments/patient",
+            { withCredentials: true }
+          );
+          setAppointments(data.appointments);
+        }
       } catch (error) {
-        console.error(error.response.data.message);
+        toast.error(error.response?.data?.message || "Error fetching data");
+      } finally {
+        setLoading(false);
       }
     };
-    fetchDoctors();
-  }, []);
-  const navigateTo = useNavigate();
-  const goToLogin = () => {
-    navigateTo("/login");
-  };
-  // const [cards] = useState(doctors)
-  // console.log(cards)
-  const [showModal, setShowModal] = useState(false);
-  function checkToken() {
-    const token = localStorage.getItem("authToken");
-    if (token) {
-      return true;
-    } else {
-      return false;
+    fetchData();
+  }, [isDoctor, isPatient]);
+
+  const handleCancel = async (appointmentId) => {
+    try {
+      await axios.put(
+        `http://localhost:8000/api/v1/appoinments/cancel/${appointmentId}`,
+        {},
+        { withCredentials: true }
+      );
+      toast.success("Appointment cancelled successfully");
+      // Refresh appointments based on user type
+      const endpoint = isDoctor ? "all" : "patient";
+      const { data } = await axios.get(
+        `http://localhost:8000/api/v1/appoinments/${endpoint}`,
+        { withCredentials: true }
+      );
+      setAppointments(data.appointments);
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Error cancelling appointment");
     }
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-tl from-[#76dbcf]">
+        <Navbar />
+        <div className="flex justify-center items-center h-64">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
+        </div>
+      </div>
+    );
   }
 
-  const tokenExists = checkToken();
-  // console.log(tokenExists);
-  // let df = "";
-  // let dl = "";
-  // let dd = "";
-
   return (
-    <div className="sec-1 w-full h-full bg-gradient-to-tl from-[#76dbcf]">
+    <div className="min-h-screen bg-gradient-to-tl from-[#76dbcf]">
       <Navbar />
-      <div className="header w-full flex justify-center mt-7">
-        <h1 className="font-semibold text-2xl">Our Doctors</h1>
-      </div>
-      <div className="doc-details p-5 flex justify-around flex-wrap">
-        {doctors && doctors.length > 0 ? (
-          doctors.map((element) => (
-            <AppointDoctors
-              key={element._id}
-              data={element}
-              onClick={handleCardClick}
-            />
-          ))
-        ) : (
-          <h1>No Doctors</h1>
-        )}
-      </div>
-      <AppointForm data={selectedCard} onClose={handleCloseModal} />
-      {/* <div className="doc-details p-5 flex justify-around flex-wrap">
-        {doctors && doctors.length > 0 ? (
-          doctors.map((element) => {
-            return (
-              <div
-                key={element._id}
-                className="flex  bg-white box-border h-fit w-52 rounded-3xl p-4 border-4 shadow-[0_24px_40px_-15px_rgba(0,0,0,0.3)] flex-col items-center mx-14 mb-10"
-              >
-                <div className="w-28 h-28 rounded-full border-2 border-emerald-300 mb-2">
-                  <img src="" alt="" />
-                </div>
-                <h1 className="text-black font-semibold text-xl ">
-                  {element.firstName} {element.lastName}
-                </h1>
-                <h1 className="text-black font-semibold text-xl">
-                  {element.doctorDepartment}
-                </h1>
-                <button
-                  onClick={() => {
-                    if (tokenExists) {
-                      console.log(element.firstName);
-                      setShowModal(true);
-                    } else {
-                      navigateTo("/login");
-                    }
-                  }}
-                  // onClick={() => {
-                  //   setShowModal(true);
-                  // }}
-                  className="w-40 bg-[#76dbcf] rounded-2xl h-10 font-semibold mt-2"
-                >
-                  Book Appointment
-                </button>
-                {showModal && (
-                  <AppointForm
-                    onClose={() => setShowModal(false)}
-                    doc={[
-                      element.firstName,
-                      element.lastName,
-                      element.doctorDepartment,
-                    ]}
-                  />
-                )}
+      
+      {isDoctor ? (
+        // Doctor's View
+        <div className="container mx-auto p-4">
+          <h1 className="text-3xl font-bold text-center mb-8">My Appointments</h1>
+          
+          {/* Upcoming Appointments */}
+          <div className="mb-12">
+            <h2 className="text-2xl font-semibold mb-6">Upcoming Appointments</h2>
+            {appointments.filter(appointment => {
+              const appointmentDate = new Date(appointment.appointment_date);
+              const today = new Date();
+              today.setHours(0, 0, 0, 0);
+              return appointmentDate >= today && appointment.status !== "Cancelled";
+            }).length === 0 ? (
+              <div className="text-center py-8 bg-white rounded-lg shadow-lg">
+                <p className="text-gray-600 text-lg">No upcoming appointments</p>
               </div>
-            );
-          })
-        ) : (
-          <h1>No Doctors</h1>
-        )}
-      </div> */}
+            ) : (
+              <div className="grid gap-6">
+                {appointments
+                  .filter(appointment => {
+                    const appointmentDate = new Date(appointment.appointment_date);
+                    const today = new Date();
+                    today.setHours(0, 0, 0, 0);
+                    return appointmentDate >= today && appointment.status !== "Cancelled";
+                  })
+                  .map((appointment) => (
+                    <div
+                      key={appointment._id}
+                      className="bg-white rounded-lg shadow-lg p-6 transform hover:scale-[1.02] transition-transform"
+                    >
+                      <div className="flex justify-between items-start">
+                        <div className="flex items-center gap-4">
+                          <img
+                            className="w-12 h-12 rounded-full border border-emerald-300"
+                            src={appointment.patientId?.avatar?.url || (appointment.patientGender === "Male" ? "../../public/PatientMan.png" : "../../public/PatientWomen.png")}
+                            alt=""
+                          />
+                          <div>
+                            <h3 className="text-xl font-semibold">
+                              Patient: {appointment.firstName} {appointment.lastName}
+                            </h3>
+                            <p className="text-gray-600">Reason: {appointment.reason}</p>
+                          </div>
+                        </div>
+                        <span
+                          className={`px-4 py-2 rounded-full text-sm font-semibold ${
+                            appointment.status === "Booked"
+                              ? "bg-green-100 text-green-800"
+                              : appointment.status === "Cancelled"
+                              ? "bg-red-100 text-red-800"
+                              : "bg-orange-100 text-orange-800"
+                          }`}
+                        >
+                          {appointment.status}
+                        </span>
+                      </div>
+
+                      <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <p className="text-sm text-gray-600">Date</p>
+                          <p className="font-medium">
+                            {appointment.appointment_date.split('T')[0].split('-').join('/')}
+                          </p>
+                        </div>
+                        <div>
+                          <p className="text-sm text-gray-600">Time</p>
+                          <p className="font-medium">{appointment.appointment_time}</p>
+                        </div>
+                      </div>
+
+                      {appointment.status === "Booked" && (
+                        <div className="mt-4 flex gap-2">
+                          <button
+                            onClick={() => handleCancel(appointment._id)}
+                            className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors"
+                          >
+                            Cancel Appointment
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+              </div>
+            )}
+          </div>
+
+          {/* Recent Appointments */}
+          <div>
+            <h2 className="text-2xl font-semibold mb-6">Recent Appointments</h2>
+            {appointments.filter(appointment => {
+              const appointmentDate = new Date(appointment.appointment_date);
+              const today = new Date();
+              today.setHours(0, 0, 0, 0);
+              return appointmentDate < today || appointment.status === "Cancelled";
+            }).length === 0 ? (
+              <div className="text-center py-8 bg-white rounded-lg shadow-lg">
+                <p className="text-gray-600 text-lg">No recent appointments</p>
+              </div>
+            ) : (
+              <div className="grid gap-6">
+                {appointments
+                  .filter(appointment => {
+                    const appointmentDate = new Date(appointment.appointment_date);
+                    const today = new Date();
+                    today.setHours(0, 0, 0, 0);
+                    return appointmentDate < today || appointment.status === "Cancelled";
+                  })
+                  .map((appointment) => (
+                    <div
+                      key={appointment._id}
+                      className="bg-white rounded-lg shadow-lg p-6 transform hover:scale-[1.02] transition-transform"
+                    >
+                      <div className="flex justify-between items-start">
+                        <div className="flex items-center gap-4">
+                          <img
+                            className="w-12 h-12 rounded-full border border-emerald-300"
+                            src={appointment.patientId?.avatar?.url || (appointment.patientGender === "Male" ? "../../public/PatientMan.png" : "../../public/PatientWomen.png")}
+                            alt=""
+                          />
+                          <div>
+                            <h3 className="text-xl font-semibold">
+                              Patient: {appointment.firstName} {appointment.lastName}
+                            </h3>
+                            <p className="text-gray-600">Reason: {appointment.reason}</p>
+                          </div>
+                        </div>
+                        <span
+                          className={`px-4 py-2 rounded-full text-sm font-semibold ${
+                            appointment.status === "Booked"
+                              ? "bg-green-100 text-green-800"
+                              : appointment.status === "Cancelled"
+                              ? "bg-red-100 text-red-800"
+                              : "bg-orange-100 text-orange-800"
+                          }`}
+                        >
+                          {appointment.status}
+                        </span>
+                      </div>
+
+                      <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <p className="text-sm text-gray-600">Date</p>
+                          <p className="font-medium">
+                            {appointment.appointment_date.split('T')[0].split('-').join('/')}
+                          </p>
+                        </div>
+                        <div>
+                          <p className="text-sm text-gray-600">Time</p>
+                          <p className="font-medium">{appointment.appointment_time}</p>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+              </div>
+            )}
+          </div>
+        </div>
+      ) : isPatient ? (
+        // Patient's View
+        <div className="container mx-auto p-4">
+          <h1 className="text-3xl font-bold text-center mb-8">My Appointments</h1>
+          
+          {/* Upcoming Appointments */}
+          <div className="mb-12">
+            <h2 className="text-2xl font-semibold mb-6">Upcoming Appointments</h2>
+            {appointments.filter(appointment => {
+              const appointmentDate = new Date(appointment.appointment_date);
+              const today = new Date();
+              today.setHours(0, 0, 0, 0);
+              return appointmentDate >= today && appointment.status !== "Cancelled";
+            }).length === 0 ? (
+              <div className="text-center py-8 bg-white rounded-lg shadow-lg">
+                <p className="text-gray-600 text-lg">No upcoming appointments</p>
+              </div>
+            ) : (
+              <div className="grid gap-6">
+                {appointments
+                  .filter(appointment => {
+                    const appointmentDate = new Date(appointment.appointment_date);
+                    const today = new Date();
+                    today.setHours(0, 0, 0, 0);
+                    return appointmentDate >= today && appointment.status !== "Cancelled";
+                  })
+                  .map((appointment) => (
+                    <div
+                      key={appointment._id}
+                      className="bg-white rounded-lg shadow-lg p-6 transform hover:scale-[1.02] transition-transform"
+                    >
+                      <div className="flex justify-between items-start">
+                        <div className="flex items-center gap-4">
+                          <img
+                            className="w-12 h-12 rounded-full border border-emerald-300"
+                            src={appointment.doctor?.avatar?.url || (appointment.doctor?.gender === "Male" ? "../../public/man.png" : "../../public/women.png")}
+                            alt=""
+                          />
+                          <div>
+                            <h3 className="text-xl font-semibold">
+                              Doctor: Dr. {appointment.doctor?.firstName} {appointment.doctor?.lastName}
+                            </h3>
+                            <p className="text-gray-600">Department: {appointment.department}</p>
+                            <p className="text-gray-600">Reason: {appointment.reason}</p>
+                          </div>
+                        </div>
+                        <span
+                          className={`px-4 py-2 rounded-full text-sm font-semibold ${
+                            appointment.status === "Booked"
+                              ? "bg-green-100 text-green-800"
+                              : appointment.status === "Cancelled"
+                              ? "bg-red-100 text-red-800"
+                              : "bg-orange-100 text-orange-800"
+                          }`}
+                        >
+                          {appointment.status}
+                        </span>
+                      </div>
+
+                      <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <p className="text-sm text-gray-600">Date</p>
+                          <p className="font-medium">
+                            {appointment.appointment_date.split('T')[0].split('-').join('/')}
+                          </p>
+                        </div>
+                        <div>
+                          <p className="text-sm text-gray-600">Time</p>
+                          <p className="font-medium">{appointment.appointment_time}</p>
+                        </div>
+                      </div>
+
+                      {appointment.status === "Booked" && (
+                        <div className="mt-4 flex gap-2">
+                          <button
+                            onClick={() => handleCancel(appointment._id)}
+                            className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors"
+                          >
+                            Cancel Appointment
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+              </div>
+            )}
+          </div>
+
+          {/* Recent Appointments */}
+          <div>
+            <h2 className="text-2xl font-semibold mb-6">Recent Appointments</h2>
+            {appointments.filter(appointment => {
+              const appointmentDate = new Date(appointment.appointment_date);
+              const today = new Date();
+              today.setHours(0, 0, 0, 0);
+              return appointmentDate < today || appointment.status === "Cancelled";
+            }).length === 0 ? (
+              <div className="text-center py-8 bg-white rounded-lg shadow-lg">
+                <p className="text-gray-600 text-lg">No recent appointments</p>
+              </div>
+            ) : (
+              <div className="grid gap-6">
+                {appointments
+                  .filter(appointment => {
+                    const appointmentDate = new Date(appointment.appointment_date);
+                    const today = new Date();
+                    today.setHours(0, 0, 0, 0);
+                    return appointmentDate < today || appointment.status === "Cancelled";
+                  })
+                  .map((appointment) => (
+                    <div
+                      key={appointment._id}
+                      className="bg-white rounded-lg shadow-lg p-6 transform hover:scale-[1.02] transition-transform"
+                    >
+                      <div className="flex justify-between items-start">
+                        <div className="flex items-center gap-4">
+                          <img
+                            className="w-12 h-12 rounded-full border border-emerald-300"
+                            src={appointment.doctor?.avatar?.url || (appointment.doctor?.gender === "Male" ? "../../public/man.png" : "../../public/women.png")}
+                            alt=""
+                          />
+                          <div>
+                            <h3 className="text-xl font-semibold">
+                              Doctor: Dr. {appointment.doctor?.firstName} {appointment.doctor?.lastName}
+                            </h3>
+                            <p className="text-gray-600">Department: {appointment.department}</p>
+                            <p className="text-gray-600">Reason: {appointment.reason}</p>
+                          </div>
+                        </div>
+                        <span
+                          className={`px-4 py-2 rounded-full text-sm font-semibold ${
+                            appointment.status === "Booked"
+                              ? "bg-green-100 text-green-800"
+                              : appointment.status === "Cancelled"
+                              ? "bg-red-100 text-red-800"
+                              : "bg-orange-100 text-orange-800"
+                          }`}
+                        >
+                          {appointment.status}
+                        </span>
+                      </div>
+
+                      <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <p className="text-sm text-gray-600">Date</p>
+                          <p className="font-medium">
+                            {appointment.appointment_date.split('T')[0].split('-').join('/')}
+                          </p>
+                        </div>
+                        <div>
+                          <p className="text-sm text-gray-600">Time</p>
+                          <p className="font-medium">{appointment.appointment_time}</p>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+              </div>
+            )}
+          </div>
+        </div>
+      ) : (
+        // Not logged in view
+        <div className="container mx-auto p-4 text-center">
+          <h1 className="text-3xl font-bold mb-4">Please Login to Continue</h1>
+          <p className="text-gray-600 mb-6">You need to be logged in to view or book appointments</p>
+          <div className="flex justify-center gap-4">
+            <button
+              onClick={() => navigate("/login")}
+              className="px-6 py-2 bg-[#76dbcf] text-black rounded-full font-semibold hover:bg-[#5bc4b7] transition-colors"
+            >
+              Login as Patient
+            </button>
+            <button
+              onClick={() => navigate("/logindoctor")}
+              className="px-6 py-2 bg-[#76dbcf] text-black rounded-full font-semibold hover:bg-[#5bc4b7] transition-colors"
+            >
+              Login as Doctor
+            </button>
+          </div>
+        </div>
+      )}
+
+      <AppointForm data={selectedCard} onClose={handleCloseModal} />
     </div>
   );
 };
