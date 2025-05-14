@@ -1,34 +1,18 @@
 import express from "express";
 import HealthRecord from "../models/healthRecord.model.js";
-import { isPatientAuthenticated, isDoctorAuthenticated } from "../middlewares/auth.middleware.js";
-import jwt from "jsonwebtoken";
-import { Patient } from "../models/patient.model.js";
 
-const router = express.Router();
+const healthRecordsRouter = express.Router();
 
 /**
- * GET /api/v1/health-records
- * Only accessible by patients to view their own records.
+ * @route   POST /api/v1/create-health-records
+ * @desc    Create a new health record
  */
-router.get("/", isPatientAuthenticated, async (req, res) => {
-  try {
-    const patientId = req.user._id;
-    const records = await HealthRecord.find({ patientId }).sort({ createdAt: -1 });
-    res.status(200).json({ records });
-  } catch (error) {
-    console.error("Error fetching health records:", error.message);
-    res.status(500).json({ message: "Error fetching health records" });
-  }
-});
-
-/**
- * POST /api/v1/health-records/doctor
- * Only accessible by doctors to create a new health record.
- */
-router.post("/doctor", isDoctorAuthenticated, async (req, res) => {
+healthRecordsRouter.post("/create-health-records", async (req, res) => {
   try {
     const {
-      patientId,
+      doctorName,
+      doctorDepartment,
+      patientEmail,
       patientFirstName,
       patientLastName,
       diagnosis,
@@ -36,19 +20,19 @@ router.post("/doctor", isDoctorAuthenticated, async (req, res) => {
       diagnosticTests,
     } = req.body;
 
-    const doctorName = `${req.user.firstName} ${req.user.lastName}`;
-    const doctorDepartment = req.user.department;
+    if (!doctorName || !doctorDepartment || !patientEmail || !diagnosis) {
+      return res.status(400).json({ message: "All fields are required" });
+    }
 
     const newRecord = new HealthRecord({
-      patientId,
+      doctorName,
+      doctorDepartment,
+      patientEmail,
       patientFirstName,
       patientLastName,
       diagnosis,
-      medicinesPrescribed: medicinesPrescribed.split(","),
-      diagnosticTests: diagnosticTests.split(","),
-      doctorName,
-      doctorDepartment,
-      createdBy: req.user._id,
+      medicinesPrescribed,
+      diagnosticTests
     });
 
     await newRecord.save();
@@ -59,4 +43,4 @@ router.post("/doctor", isDoctorAuthenticated, async (req, res) => {
   }
 });
 
-export default router;
+export default healthRecordsRouter;

@@ -35,6 +35,8 @@ app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
+app.use("/api/v1", healthRecordsRouter);
+
 app.use(
   fileUpload({
     useTempFiles: true,

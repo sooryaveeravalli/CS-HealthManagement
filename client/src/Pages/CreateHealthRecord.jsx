@@ -1,11 +1,13 @@
 import React, { useState } from "react";
-import NavbarDoctor from "../Components/NavbarDoctor"; // Assuming doctor navbar is being used
+import NavbarDoctor from "../Components/NavbarDoctor";
 import axios from "axios";
 import { toast } from "react-toastify";
 
 const CreateHealthRecord = () => {
   const [formData, setFormData] = useState({
-    patientId: "",
+    doctorName: "",
+    doctorDepartment: "",
+    patientEmail: "",
     patientFirstName: "",
     patientLastName: "",
     diagnosis: "",
@@ -21,18 +23,15 @@ const CreateHealthRecord = () => {
     e.preventDefault();
     try {
       const response = await axios.post(
-        "http://localhost:8000/api/v1/health-records/doctor",
-        {
-          ...formData,
-          medicinesPrescribed: formData.medicinesPrescribed.split(","),
-          diagnosticTests: formData.diagnosticTests.split(",")
-        },
-        { withCredentials: true }
+        "http://localhost:8000/api/v1/create-health-records",
+        formData
       );
 
       toast.success(response.data.message);
       setFormData({
-        patientId: "",
+        doctorName: "",
+        doctorDepartment: "",
+        patientEmail: "",
         patientFirstName: "",
         patientLastName: "",
         diagnosis: "",
@@ -57,37 +56,59 @@ const CreateHealthRecord = () => {
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block mb-1 font-semibold">Patient ID</label>
+              <label className="block mb-1 font-semibold">Doctor Name</label>
               <input
-                name="patientId"
-                placeholder="Patient ID"
-                value={formData.patientId}
+                name="doctorName"
+                placeholder="Enter Doctor Name"
+                value={formData.doctorName}
                 onChange={handleChange}
                 className="w-full p-2 border border-gray-300 rounded-lg"
               />
             </div>
 
             <div>
-              <label className="block mb-1 font-semibold">First Name</label>
+              <label className="block mb-1 font-semibold">Department</label>
               <input
-                name="patientFirstName"
-                placeholder="First Name"
-                value={formData.patientFirstName}
+                name="doctorDepartment"
+                placeholder="Enter Department"
+                value={formData.doctorDepartment}
                 onChange={handleChange}
                 className="w-full p-2 border border-gray-300 rounded-lg"
               />
             </div>
+          </div>
 
-            <div>
-              <label className="block mb-1 font-semibold">Last Name</label>
-              <input
-                name="patientLastName"
-                placeholder="Last Name"
-                value={formData.patientLastName}
-                onChange={handleChange}
-                className="w-full p-2 border border-gray-300 rounded-lg"
-              />
-            </div>
+          <div>
+            <label className="block mb-1 font-semibold">Patient Email</label>
+            <input
+              name="patientEmail"
+              placeholder="Enter Patient Email"
+              value={formData.patientEmail}
+              onChange={handleChange}
+              className="w-full p-2 border border-gray-300 rounded-lg"
+            />
+          </div>
+
+          <div>
+            <label className="block mb-1 font-semibold">First Name</label>
+            <input
+              name="patientFirstName"
+              placeholder="First Name"
+              value={formData.patientFirstName}
+              onChange={handleChange}
+              className="w-full p-2 border border-gray-300 rounded-lg"
+            />
+          </div>
+
+          <div>
+            <label className="block mb-1 font-semibold">Last Name</label>
+            <input
+              name="patientLastName"
+              placeholder="Last Name"
+              value={formData.patientLastName}
+              onChange={handleChange}
+              className="w-full p-2 border border-gray-300 rounded-lg"
+            />
           </div>
 
           <div>
@@ -105,7 +126,7 @@ const CreateHealthRecord = () => {
             <label className="block mb-1 font-semibold">Medicines Prescribed</label>
             <textarea
               name="medicinesPrescribed"
-              placeholder="Enter medicines, separated by commas..."
+              placeholder="Enter medicines..."
               value={formData.medicinesPrescribed}
               onChange={handleChange}
               className="w-full p-3 border border-gray-300 rounded-lg h-24"
@@ -116,7 +137,7 @@ const CreateHealthRecord = () => {
             <label className="block mb-1 font-semibold">Diagnostic Tests</label>
             <textarea
               name="diagnosticTests"
-              placeholder="Enter diagnostic tests, separated by commas..."
+              placeholder="Enter diagnostic tests..."
               value={formData.diagnosticTests}
               onChange={handleChange}
               className="w-full p-3 border border-gray-300 rounded-lg h-24"
